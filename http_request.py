@@ -11,18 +11,23 @@ def hello():
 
 @app.route('/prever', methods=['POST'])
 def get_and_http():
-    data = request.json
-    model, le= treinamento_ml()
+    try:
+        data = request.json
+        model, le= treinamento_ml()
 
-    industry = data.get("industry", [])
+        industry = data.get("industry", [])
 
-    predicoes = []
-    for industry_item in industry:
-        predicao = model.predict([industry_item])
-        predicao_origin = le.inverse_transform([predicao])[0]
-        predicoes.append({'industry': industry_item, 'predicao': predicao_origin})
+        predicoes = []
+        for industry_item in industry:
+            predicao = model.predict([industry_item])
+            predicao_origin = le.inverse_transform([predicao])[0]
+            predicoes.append({'industry': industry_item, 'predicao': predicao_origin})
 
-    return {'predicoes': predicoes}
+        return {'predicoes': predicoes}
+    except Exception as e:
+        print(f"Error: {e}")
+        print(f"Conteúdo da requisição: {request.data}")
+        return {"error": str(e)}, 500
 
 
 
